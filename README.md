@@ -50,7 +50,7 @@ Player Name: Name of each player.
 Position: Position played by each player.
 Event: Significant events involving players (e.g., goals, yellow/red cards).
 
-**-- Tools Used**
+**-- Tools Used: -**
 1. Python: For data cleaning, preprocessing, and initial analysis.
 2. Power BI: For creating interactive visualizations and dashboards.
 3. Tableau: For advanced data visualization and exploratory data analysis.
