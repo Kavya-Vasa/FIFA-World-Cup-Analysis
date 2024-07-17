@@ -31,6 +31,10 @@ def preprocess_world_cups_data(df):
     df['QualifiedTeams'] = pd.to_numeric(df['QualifiedTeams'])
     df['MatchesPlayed'] = pd.to_numeric(df['MatchesPlayed'])
     df['Attendance'] = pd.to_numeric(df['Attendance'].str.replace('.', '', regex=False))
+    
+    # Fill missing values if any
+    df.fillna(method='ffill', inplace=True)
+    
     return df
 
 def preprocess_matches_data(df):
@@ -57,6 +61,14 @@ def preprocess_matches_data(df):
     # Drop rows with invalid datetime values
     df = df.dropna(subset=['Date', 'Time'])
     
+    # Convert numeric columns to appropriate types
+    numeric_columns = ['Home Team Goals', 'Away Team Goals', 'Attendance', 'Half-time Home Goals', 'Half-time Away Goals']
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+    
+    # Fill missing values if any
+    df.fillna(method='ffill', inplace=True)
+    
     return df
 
 def preprocess_players_data(df):
@@ -69,7 +81,14 @@ def preprocess_players_data(df):
     Returns:
         pd.DataFrame: Preprocessed DataFrame.
     """
-    # No specific preprocessing needed for now
+    # Convert numeric columns to appropriate types
+    numeric_columns = ['Shirt Number']
+    for col in numeric_columns:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+    
+    # Fill missing values if any
+    df.fillna(method='ffill', inplace=True)
+    
     return df
 
 def analyze_data(world_cups_df, matches_df, players_df):
@@ -104,12 +123,17 @@ def analyze_data(world_cups_df, matches_df, players_df):
     key_players = players_df[players_df['Team Initials'].isin(winning_teams)]
     results['KeyPlayers'] = key_players[['Player Name', 'Team Initials', 'Position', 'Event']]
     
+    # Evaluation metrics
+    results['TotalGoals'] = matches_df['Home Team Goals'].sum() + matches_df['Away Team Goals'].sum()
+    results['AverageGoalsPerMatch'] = results['TotalGoals'] / matches_df.shape[0]
+    results['AverageAttendancePerMatch'] = matches_df['Attendance'].mean()
+    
     return results
 
 def main():
-    world_cups_file = 'C:\\Users\\LENOVO\\Videos\\WorldCups.csv'
-    matches_file = 'C:\\Users\\LENOVO\\Videos\\WorldCupMatches.csv'
-    players_file = 'C:\\Users\\LENOVO\\Videos\\WorldCupPlayers.csv'
+    world_cups_file = 'C:\\Users\\LENOVO\\Videos\\FIFA Excel Sheets\\WorldCups.csv'
+    matches_file = 'C:\\Users\\LENOVO\\Videos\\FIFA Excel Sheets\\WorldCupMatches.csv'
+    players_file = 'C:\\Users\\LENOVO\\Videos\\FIFA Excel Sheets\\WorldCupPlayers.csv'
     
     # Load data
     world_cups_df = load_data(world_cups_file)
